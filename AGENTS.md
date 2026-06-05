@@ -8,10 +8,10 @@
 
 ### Services
 
-| Service | Command | Port | Required? |
-|---|---|---|---|
-| Vite dev server | `npm run dev` | 5173 (default) | Yes, for local development |
-| Vite preview | `npm run preview` | 4173 (default) | Optional, for production build preview |
+| Service         | Command           | Port           | Required?                              |
+| --------------- | ----------------- | -------------- | -------------------------------------- |
+| Vite dev server | `npm run dev`     | 5173 (default) | Yes, for local development             |
+| Vite preview    | `npm run preview` | 4173 (default) | Optional, for production build preview |
 
 ### Standard commands
 
