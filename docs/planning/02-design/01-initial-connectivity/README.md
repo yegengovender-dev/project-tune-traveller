@@ -43,7 +43,8 @@ A user should understand why Tune Traveller needs music-library access, complete
 
 - Show a connected account summary.
 - Show the favourites playlist title and total song count when available.
-- List songs with at least title and artist.
+- List songs with song name, artist name, album name, and release data.
+- Include controls to disconnect or switch accounts.
 - Include an obvious next action for moving into cross-reference planning later.
 
 ## Required states
@@ -62,8 +63,12 @@ A user should understand why Tune Traveller needs music-library access, complete
 - Use "favourites playlist" consistently in this step.
 - Avoid promising travel recommendations until the song data is visible.
 
-## Open questions
+## Decisions
 
-- What authentication method will be available for YouTube Music?
-- Which song fields are guaranteed in the first integration?
-- Should users be able to disconnect or switch accounts in the first version?
+- Use the YouTube Music API for authentication and library access.
+- The first integration should expect these song fields:
+  - Artist name
+  - Album name
+  - Song name
+  - Release data
+- Users should be able to disconnect or switch accounts in the first version.
