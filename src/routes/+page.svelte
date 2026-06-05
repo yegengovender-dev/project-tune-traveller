@@ -22,9 +22,7 @@
 			Tune Traveller is a Svelte-powered starting point for turning favorite sounds into memorable
 			journeys.
 		</p>
-		<a class="cta" href="https://svelte.dev/docs/kit" rel="noreferrer" target="_blank">
-			Explore the SvelteKit docs
-		</a>
+		<a class="cta" href="/connect">Get started</a>
 	</section>
 
 	<section class="panel" aria-label="Project priorities">
