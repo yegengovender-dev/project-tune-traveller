@@ -1,8 +1,18 @@
 import { dev } from '$app/environment';
 import { redirect, type Actions } from '@sveltejs/kit';
 import { generateCodeChallenge, generateCodeVerifier } from '$lib/server/pkce';
-import { clearAuthCookie, getAuthCookie, isAuthExpired } from '$lib/server/session';
-import { buildOAuthUrl, fetchAccountInfo, fetchLikedSongs } from '$lib/server/youtube';
+import {
+	clearAuthCookie,
+	getAuthCookie,
+	isAuthExpired,
+	validateAuthCookieConfig
+} from '$lib/server/session';
+import {
+	buildOAuthUrl,
+	fetchAccountInfo,
+	fetchLikedSongs,
+	validateYouTubeOAuthConfig
+} from '$lib/server/youtube';
 import type { PageData } from '$lib/types/music';
 import type { PageServerLoad } from './$types';
 
@@ -27,7 +37,27 @@ function connectionError(message: string): PageData {
 
 function connectionErrorMessage(reason: string | null): string {
 	if (reason === 'configuration_failed') {
-		return 'YouTube Music connection is not configured yet. Add the Google OAuth environment variables, then try again.';
+		return 'YouTube Music connection is not configured yet. Add Google OAuth credentials and a 32+ character AUTH_COOKIE_SECRET, then try again.';
+	}
+
+	if (reason === 'google_denied') {
+		return 'Google did not grant access to your YouTube Music library. Please approve the requested read-only access to continue.';
+	}
+
+	if (reason === 'invalid_callback') {
+		return 'Google returned an incomplete login response. Please start the connection again.';
+	}
+
+	if (reason === 'stale_callback') {
+		return 'The login session expired before Google returned. Please start the connection again.';
+	}
+
+	if (reason === 'token_exchange_failed') {
+		return 'Google accepted the login but rejected the token exchange. Check the Google client secret and redirect URI configuration, then try again.';
+	}
+
+	if (reason === 'session_failed') {
+		return 'The login succeeded, but Tune Traveller could not save the secure session. Check AUTH_COOKIE_SECRET, then try again.';
 	}
 
 	return 'We could not finish connecting to YouTube Music. Please try again.';
@@ -84,16 +114,17 @@ export const load: PageServerLoad = async ({ cookies, url }) => {
 
 export const actions: Actions = {
 	connect: async ({ cookies }) => {
-		const state = crypto.randomUUID();
-		const verifier = generateCodeVerifier();
-		const challenge = await generateCodeChallenge(verifier);
-		let oauthUrl: string;
-
 		try {
-			oauthUrl = buildOAuthUrl(state, challenge);
+			validateYouTubeOAuthConfig();
+			validateAuthCookieConfig();
 		} catch {
 			redirect(303, '/connect?error=configuration_failed');
 		}
+
+		const state = crypto.randomUUID();
+		const verifier = generateCodeVerifier();
+		const challenge = await generateCodeChallenge(verifier);
+		const oauthUrl = buildOAuthUrl(state, challenge);
 
 		cookies.set(OAUTH_STATE_COOKIE, state, oauthCookieOptions);
 		cookies.set(PKCE_VERIFIER_COOKIE, verifier, oauthCookieOptions);

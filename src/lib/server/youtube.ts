@@ -74,6 +74,12 @@ function requireEnv(name: string): string {
 	return value;
 }
 
+export function validateYouTubeOAuthConfig(): void {
+	requireEnv('GOOGLE_CLIENT_ID');
+	requireEnv('GOOGLE_CLIENT_SECRET');
+	requireEnv('GOOGLE_REDIRECT_URI');
+}
+
 function assertTokenResponse(value: unknown): asserts value is TokenResponse {
 	const response = value as Partial<TokenResponse>;
 

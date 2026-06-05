@@ -25,6 +25,10 @@ function requireCookieSecret(): string {
 	return secret;
 }
 
+export function validateAuthCookieConfig(): void {
+	requireCookieSecret();
+}
+
 function base64UrlEncode(value: string | ArrayBuffer): string {
 	if (typeof value === 'string') {
 		return Buffer.from(value, 'utf8').toString('base64url');
