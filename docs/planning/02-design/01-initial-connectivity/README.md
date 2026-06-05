@@ -49,13 +49,13 @@ A user should understand why Tune Traveller needs music-library access, complete
 
 ## Required states
 
-| State | Design need |
-| --- | --- |
-| Not connected | Explain the value and show the connect action. |
-| Connecting | Confirm that work is in progress and prevent duplicate actions. |
-| Connected with songs | Show account details, song count, and the song list. |
+| State                   | Design need                                                                    |
+| ----------------------- | ------------------------------------------------------------------------------ |
+| Not connected           | Explain the value and show the connect action.                                 |
+| Connecting              | Confirm that work is in progress and prevent duplicate actions.                |
+| Connected with songs    | Show account details, song count, and the song list.                           |
 | Connected with no songs | Explain that no favourites were found and suggest checking the source library. |
-| Connection failed | Explain that the connection failed and provide a retry action. |
+| Connection failed       | Explain that the connection failed and provide a retry action.                 |
 
 ## Content notes
 
