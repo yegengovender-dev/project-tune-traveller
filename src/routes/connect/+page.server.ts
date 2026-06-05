@@ -25,9 +25,17 @@ function connectionError(message: string): PageData {
 	};
 }
 
+function connectionErrorMessage(reason: string | null): string {
+	if (reason === 'configuration_failed') {
+		return 'YouTube Music connection is not configured yet. Add the Google OAuth environment variables, then try again.';
+	}
+
+	return 'We could not finish connecting to YouTube Music. Please try again.';
+}
+
 export const load: PageServerLoad = async ({ cookies, url }) => {
 	if (url.searchParams.has('error')) {
-		return connectionError('We could not finish connecting to YouTube Music. Please try again.');
+		return connectionError(connectionErrorMessage(url.searchParams.get('error')));
 	}
 
 	const tokens = await getAuthCookie(cookies);
@@ -79,11 +87,18 @@ export const actions: Actions = {
 		const state = crypto.randomUUID();
 		const verifier = generateCodeVerifier();
 		const challenge = await generateCodeChallenge(verifier);
+		let oauthUrl: string;
+
+		try {
+			oauthUrl = buildOAuthUrl(state, challenge);
+		} catch {
+			redirect(303, '/connect?error=configuration_failed');
+		}
 
 		cookies.set(OAUTH_STATE_COOKIE, state, oauthCookieOptions);
 		cookies.set(PKCE_VERIFIER_COOKIE, verifier, oauthCookieOptions);
 
-		redirect(303, buildOAuthUrl(state, challenge));
+		redirect(303, oauthUrl);
 	},
 	disconnect: async ({ cookies }) => {
 		clearAuthCookie(cookies);
