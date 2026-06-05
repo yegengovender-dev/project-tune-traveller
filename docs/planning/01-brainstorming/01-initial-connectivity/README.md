@@ -1,4 +1,4 @@
-# Initial Connectivity
+# 1.1 Initial Connectivity
 
 ## Basic execution plan
 
