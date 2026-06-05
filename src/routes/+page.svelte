@@ -30,7 +30,7 @@
 	<section class="panel" aria-label="Project priorities">
 		<h2>Initial focus</h2>
 		<ul>
-			{#each highlights as highlight}
+			{#each highlights as highlight (highlight)}
 				<li>{highlight}</li>
 			{/each}
 		</ul>
