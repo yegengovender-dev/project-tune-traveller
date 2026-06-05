@@ -57,8 +57,28 @@ interface PlaylistItemsResponse {
 	items?: YouTubePlaylistItem[];
 }
 
+interface GoogleApiErrorDetail {
+	message?: string;
+	reason?: string;
+}
+
+interface GoogleApiErrorPayload {
+	error_description?: string;
+	error?:
+		| string
+		| {
+				code?: number;
+				message?: string;
+				status?: string;
+				errors?: GoogleApiErrorDetail[];
+		  };
+}
+
 export class YouTubeApiError extends Error {
-	constructor(message: string) {
+	constructor(
+		message: string,
+		readonly status?: number
+	) {
 		super(message);
 		this.name = 'YouTubeApiError';
 	}
@@ -100,25 +120,67 @@ function assertUserInfoResponse(value: unknown): asserts value is UserInfoRespon
 	}
 }
 
+function extractGoogleErrorDetail(body: unknown): string | null {
+	if (!body || typeof body !== 'object') {
+		return null;
+	}
+
+	const payload = body as GoogleApiErrorPayload;
+
+	if (typeof payload.error_description === 'string') {
+		return payload.error_description;
+	}
+
+	if (typeof payload.error === 'string') {
+		return payload.error;
+	}
+
+	if (!payload.error || typeof payload.error !== 'object') {
+		return null;
+	}
+
+	const parts = [
+		payload.error.message,
+		payload.error.status,
+		...(payload.error.errors ?? []).flatMap((detail) => [detail.message, detail.reason])
+	].filter((part): part is string => Boolean(part));
+
+	return parts.length > 0 ? [...new Set(parts)].join(' ') : null;
+}
+
+function buildErrorMessage(response: Response, fallbackMessage: string, body: unknown): string {
+	const detail = extractGoogleErrorDetail(body);
+
+	if (response.status === 403 && fallbackMessage.includes('favourites playlist')) {
+		const guidance =
+			'Make sure the Google Cloud project has YouTube Data API v3 enabled and the signed-in account can access YouTube Music.';
+
+		return detail
+			? `YouTube blocked access to the favourites playlist: ${detail}. ${guidance}`
+			: `YouTube blocked access to the favourites playlist. ${guidance}`;
+	}
+
+	return detail ?? fallbackMessage;
+}
+
 async function readJsonResponse(response: Response, fallbackMessage: string): Promise<unknown> {
 	if (response.ok) {
 		return response.json();
 	}
 
-	let detail = fallbackMessage;
+	let message = fallbackMessage;
 
 	try {
 		const body: unknown = await response.json();
-		if (body && typeof body === 'object' && 'error_description' in body) {
-			detail = String(body.error_description);
-		} else if (body && typeof body === 'object' && 'error' in body) {
-			detail = String(body.error);
-		}
+		message = buildErrorMessage(response, fallbackMessage, body);
 	} catch {
 		// The status text below still gives callers enough context.
 	}
 
-	throw new YouTubeApiError(`${detail} (${response.status} ${response.statusText})`);
+	throw new YouTubeApiError(
+		`${message} (${response.status} ${response.statusText})`,
+		response.status
+	);
 }
 
 function buildTokenPayload(extra: Record<string, string>): URLSearchParams {
