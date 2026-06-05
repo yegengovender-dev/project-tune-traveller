@@ -67,7 +67,8 @@ export const load: PageServerLoad = async ({ cookies, url }) => {
 			}
 		};
 	} catch (error) {
-		const message = error instanceof Error ? error.message : 'Could not load your favourites playlist.';
+		const message =
+			error instanceof Error ? error.message : 'Could not load your favourites playlist.';
 
 		return connectionError(message);
 	}

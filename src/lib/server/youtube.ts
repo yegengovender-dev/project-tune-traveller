@@ -123,7 +123,9 @@ function buildTokenPayload(extra: Record<string, string>): URLSearchParams {
 	});
 }
 
-function chooseThumbnail(thumbnails: Record<string, YouTubeThumbnail | undefined> | undefined): string | null {
+function chooseThumbnail(
+	thumbnails: Record<string, YouTubeThumbnail | undefined> | undefined
+): string | null {
 	if (!thumbnails) {
 		return null;
 	}

@@ -6,11 +6,11 @@
 	import ConnectScreen from '$lib/components/connect/ConnectScreen.svelte';
 	import NoSongsScreen from '$lib/components/connect/NoSongsScreen.svelte';
 	import { setConnectionContext } from '$lib/state/connection.svelte';
-	import type { PageData } from './$types';
+	import type { PageData } from '$lib/types/music';
 
 	let { data }: { data: PageData } = $props();
 
-	const connection = setConnectionContext(data.status);
+	const connection = setConnectionContext('not-connected');
 
 	$effect(() => {
 		connection.status = $navigating ? 'connecting' : data.status;

@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { resolve } from '$app/paths';
+
 	const highlights = [
 		'Map destinations to the artists and scenes that shaped them',
 		'Collect venues, festivals, record shops, and listening bars in one itinerary',
@@ -22,7 +24,7 @@
 			Tune Traveller is a Svelte-powered starting point for turning favorite sounds into memorable
 			journeys.
 		</p>
-		<a class="cta" href="/connect">Get started</a>
+		<a class="cta" href={resolve('/connect')}>Get started</a>
 	</section>
 
 	<section class="panel" aria-label="Project priorities">

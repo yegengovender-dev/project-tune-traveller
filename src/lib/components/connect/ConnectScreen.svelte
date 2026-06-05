@@ -11,8 +11,8 @@
 	</form>
 
 	<p class="privacy">
-		We only request read-only access to the playlist data needed for this import. Tokens are stored in
-		HTTP-only cookies and are not exposed to the browser.
+		We only request read-only access to the playlist data needed for this import. Tokens are stored
+		in HTTP-only cookies and are not exposed to the browser.
 	</p>
 </section>
 
